@@ -3,6 +3,13 @@
 dev2@lma.push/kam123456
 sfdx force:source:deploy --manifest /Users/kamlesh.patel/lwc/labapp/PackagePush/manifest/package.xml
 
+## GIT
+
+git remote remove origin
+git remote add origin https://github.com/kamipatel/packagepush.git
+git commit -a --no-verify -m "init"
+git push -u origin master
+
 ## Create lightning component
 
 sfdx force:lightning:component:create --type lwc -n SchedulePush -d ./force-app/main/default/lwc
