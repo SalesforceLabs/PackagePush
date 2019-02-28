@@ -1,0 +1,13 @@
+<template>
+    <lightning-tile label="Pending Push" class="slds-text-color_default">
+        <div class="slds-card slds-p-around_x-small">
+            <lightning-datatable hide-checkbox-column onrowaction={handleRowAction} data={data} columns={columns}
+                key-field="Id"></lightning-datatable>
+        </div>
+    </lightning-tile>
+    <lightning-tile label="Job History" class="slds-text-color_default">
+        <div class="slds-card slds-p-around_x-small">
+            <lightning-datatable hide-checkbox-column data={historydata} columns={historycolumns} key-field="Id"></lightning-datatable>
+        </div>
+    </lightning-tile>
+</template>

@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "baseUrl": ".",
+        "paths": {
+            "c/schedule-history-list": [
+                "scheduleHistoryList/scheduleHistoryList.js"
+            ],
+            "c/schedule-push": [
+                "schedulePush/schedulePush.js"
+            ]
+        }
+    },
+    "include": [
+        "**/*",
+        "../../../../.sfdx/typings/lwc/**/*.d.ts"
+    ]
+}

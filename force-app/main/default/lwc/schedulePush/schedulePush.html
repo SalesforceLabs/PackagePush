@@ -1,0 +1,69 @@
+<template>
+
+    <div class="slds-card slds-p-around_x-small">
+
+        <lightning-layout>
+
+            <lightning-layout-item padding="around-small">
+                <lightning-tile label="Package Version" class="slds-box">
+                    <lightning-combobox name="ListView" label="Select ListView" value="" placeholder="Select ListView"
+                        options={listviewOptions} onchange={listviewHandler}>
+                    </lightning-combobox>
+                    <lightning-combobox name="Packages" label="Select Package" value={selpkgid} placeholder="Select Package"
+                        options={pkgOptions} onchange={packageHandler}>
+                    </lightning-combobox>
+                    <lightning-combobox name="PackageVersions" label="Select Package Version" value={selpkgver}
+                        placeholder="Select Package Version" options={pkgVersionOptions} onchange={packageVersionHandler}>
+                    </lightning-combobox>
+
+                </lightning-tile>
+            </lightning-layout-item>
+
+            <lightning-layout-item padding="around-small">
+                <lightning-tile label="Filters" class="slds-tile_board slds-box">
+                    <p class="slds-truncate" title="7 Members">Show Outliers</p>
+                    <lightning-button-icon-stateful icon-name="utility:warning" selected={showoutlier} alternative-text="Outliers"
+                        onclick={handleToggle}>
+                    </lightning-button-icon-stateful>
+                </lightning-tile>
+            </lightning-layout-item>
+
+            <template if:true={hasData}>
+                <lightning-layout-item padding="around-small">
+
+                    <lightning-tile label="Schedule" class="slds-tile_board slds-box">
+                        <p class="slds-truncate" title="7 Members">Total: {data.length} Selected: {selectedRowsCount}</p>
+                        <p>Packaging org Timezone: {tz}</p>
+                        <p>Packaging org Current time: {curtzdt}</p>
+                        <lightning-input timezone={tz} type="datetime" name="dt" label="" value={scheduletime} onchange={handledt}></lightning-input>
+                        <lightning-button disabled={disablePushBtn} variant="brand" label="Schedule Push Upgrade"
+                            onclick={handlePush}></lightning-button>
+                    </lightning-tile>
+
+                </lightning-layout-item>
+            </template>
+
+        </lightning-layout>
+    </div>
+
+    <template if:true={hasData}>
+        <lightning-datatable show-row-number-column onrowselection={rowSelected} data={data} columns={columns}
+            key-field="id"></lightning-datatable>
+    </template>
+
+    <template if:true={showoutlier}>
+        <lightning-datatable show-row-number-column hide-checkbox-column data={outlierdata} columns={outliercolumns}
+            key-field="id"></lightning-datatable>
+    </template>
+
+    <!-- no rows of data are available-->
+    <template if:true={hasNoData}>
+
+    </template>
+    <!-- else: error -->
+    <template if:true={message}>
+        {message}
+    </template>
+
+
+</template>
