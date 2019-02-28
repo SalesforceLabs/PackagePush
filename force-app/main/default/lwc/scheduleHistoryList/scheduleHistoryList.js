@@ -6,6 +6,31 @@ import {
 
 import getPendingJobs from '@salesforce/apex/PackageController.getPendingJobs';
 import cancelPush from '@salesforce/apex/PackageController.CancelPush';
+import {
+    refreshApex
+} from '@salesforce/apex';
+
+import {
+    ShowToastEvent
+} from 'lightning/platformShowToastEvent';
+
+variantOptions = [{
+        label: 'error',
+        value: 'error'
+    },
+    {
+        label: 'warning',
+        value: 'warning'
+    },
+    {
+        label: 'success',
+        value: 'success'
+    },
+    {
+        label: 'info',
+        value: 'info'
+    }
+];
 
 export default class ScheduleHistoryList extends LightningElement {
 
@@ -119,23 +144,24 @@ export default class ScheduleHistoryList extends LightningElement {
 
             window.console.log("cancelPush results=" + JSON.stringify(result));
             if (result.status) {
-                /*
-                showToast({
+
+                this.showNotification({
                     title: 'Scheduled Push canceled!',
                     message: 'Successfully!',
-
+                    variant: 'success',
                 });
                 //this.fireCanceledChangeEvent();
+
                 refreshApex(this.getPendingJobs);
-                */
+
             } else {
-                /*
-                showToast({
+
+                this.showNotification({
                     title: 'Scheduled Push cancel failed',
                     message: result.message,
                     variant: 'error',
                 });
-                */
+
             }
         });
     }
@@ -153,7 +179,16 @@ export default class ScheduleHistoryList extends LightningElement {
     handlePushScheduled(event) {
         //this.doCancelPush(event.detail.row.Id);
         window.console.log('**handlePushScheduled=' + JSON.stringify(event));
-        //refreshApex(this.getPendingJobs);
+        refreshApex(this.getPendingJobs);
+    }
+
+    showNotification(titleText, messageText, vari) {
+        const evt = new ShowToastEvent({
+            title: titleText,
+            message: messageText,
+            variant: vari
+        });
+        this.dispatchEvent(evt);
     }
 
 }

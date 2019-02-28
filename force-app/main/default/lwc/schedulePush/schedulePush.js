@@ -24,6 +24,10 @@ import getPkgOrgDetails from '@salesforce/apex/PackageController.getPkgOrgDetail
 
 import ACCOUNT_OBJECT from '@salesforce/schema/Account';
 
+import {
+    ShowToastEvent
+} from 'lightning/platformShowToastEvent';
+
 /**
  * Gets a field value by recursing through spanned records.
  * @param {Object} record The record holding the field.
@@ -68,7 +72,7 @@ export default class SchedulePush extends LightningElement {
     @track showoutlier = false;
     @track disablePushBtn = false;
     @track tz = "";
-    @track scheduletime = "2018-12-12T12:00:00Z";
+    @track scheduletime = "2019-12-12T12:00:00Z";
     @track locale = "";
     @track curtzdt = "";
 
@@ -78,6 +82,24 @@ export default class SchedulePush extends LightningElement {
 
     validOrgStatus = ["TRIAL", "SIGNING_UP", "ACTIVE", "FREE", "Trial", "Active", "Free"];
     validLicenseStatus = ["Trial", "Active", "TRIAL", "ACTIVE", "FREE"];
+
+    variantOptions = [{
+            label: 'error',
+            value: 'error'
+        },
+        {
+            label: 'warning',
+            value: 'warning'
+        },
+        {
+            label: 'success',
+            value: 'success'
+        },
+        {
+            label: 'info',
+            value: 'info'
+        }
+    ];
 
     @wire(getPkgOrgDetails, {
         "whichorg": ""
@@ -224,12 +246,11 @@ export default class SchedulePush extends LightningElement {
             //window.console.log('**license this.data=' + this.data.length);
         } else if (error) {
 
-            /* TBD
-            showToast({
+            this.showNotification({
                 title: 'Error Loading List',
                 message: error.message,
                 variant: 'error',
-            });*/
+            });
         }
     }
 
@@ -462,21 +483,22 @@ export default class SchedulePush extends LightningElement {
             //result = JSON.parse(result);
             window.console.log("SchedulePushUpgrade results=" + JSON.stringify(result));
             if (result.status) {
-                /* TBD
-                showToast({
+
+                this.showNotification({
                     title: 'Scheduled Push upgrade',
                     message: 'Successfully!',
+                    variant: 'success',
                 });
-                this.firePushScheduledEvent();
-                */
+                //this.firePushScheduledEvent();
+
             } else {
-                /* TBD
-                showToast({
+
+                this.showNotification({
                     title: 'Scheduled Push upgrade failed',
                     message: result.message,
                     variant: 'error',
                 });
-                */
+
             }
         });
     }
@@ -546,6 +568,15 @@ export default class SchedulePush extends LightningElement {
 
     handleToggle() {
         this.showoutlier = !this.showoutlier;
+    }
+
+    showNotification(titleText, messageText, vari) {
+        const evt = new ShowToastEvent({
+            title: titleText,
+            message: messageText,
+            variant: vari
+        });
+        this.dispatchEvent(evt);
     }
 
 }
