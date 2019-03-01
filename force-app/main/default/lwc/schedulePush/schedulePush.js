@@ -343,8 +343,8 @@ export default class SchedulePush extends LightningElement {
         }
     }
 
-    async getPkgOrgVersions() {
-        await getFromPkgOrgPackageVersions().then((result) => {
+    getPkgOrgVersions() {
+        getFromPkgOrgPackageVersions().then((result) => {
             window.console.log("getFromPkgOrgPackageVersions result=" + JSON.stringify(result));
             //window.console.log("getFromPkgOrgPackageVersions data=" + JSON.stringify(this.data));
 
@@ -447,7 +447,7 @@ export default class SchedulePush extends LightningElement {
         });
     }
 
-    async SchedulePushUpgrade() {
+    SchedulePushUpgrade() {
         //var scheduletime = "2018-10-10T21:00:00";
         //scheduletime = "2019-08-afafa24T21:00:00";
 
@@ -467,7 +467,7 @@ export default class SchedulePush extends LightningElement {
         //var temprows = ["00DB0000000PSU8"];
         //accountId: this.recordId,
         //String packageverid, String starttime, String orgs
-        await schedulePush({
+        schedulePush({
             packageverid: this.selpkgver,
             starttime: scheduletime,
             orgs: orgidjson
