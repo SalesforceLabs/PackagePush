@@ -233,10 +233,6 @@ export default class SchedulePush extends LightningElement {
             });
 
             window.console.log('LICENSES alldata =' + JSON.stringify(this.alldata));
-            //this.enrichdata(this.alldata);
-            //this.filterdata(this.alldata);
-
-            //window.console.log('**license this.data=' + this.data.length);
         } else if (error) {
 
             const evt = new ShowToastEvent({
@@ -251,12 +247,7 @@ export default class SchedulePush extends LightningElement {
 
     enrichdata(listviewdata) {
         //Create MAP of Id to real packageId
-        //TBD Fix getLicenseDetails
-        //Listview record {"id":"a00R000000EtuC5IAJ","Name":"L-00001","sfLma__Lead__r.Name":null,"sfLma__Package_Version__r.Name":"pkgv2","sfLma__Licensed_Seats__c":"Site License","sfLma__Install_Date__c":"2018-09-16","sfLma__Expiration_Date__c":"Does not expire","sfLma__Is_Sandbox__c":false}
-        //License record {"Id":"a00R000000EtuC5IAJ","sfLma__Package__c":"a02R000000TH5eJIAT","sfLma__Package_Version__c":"a01R000000CPVuYIAX","sfLma__Package__r":{"sfLma__Package_ID__c":"03241000011cPCcAAM","Id":"a02R000000TH5eJIAT"},"sfLma__Package_Version__r":{"sfLma__Version_ID__c":"04t41000452MPuYAAW","Id":"a01R000000CPVuYIAX"}}
-
         window.console.log('**enrichdata this.listviewdata=' + JSON.stringify(listviewdata));
-
         window.console.log('**enrichdata wiredLicenseDetails=' + JSON.stringify(this.wiredLicenseDetails.data));
 
         listviewdata.forEach(licview => {
@@ -509,8 +500,22 @@ export default class SchedulePush extends LightningElement {
         //    window.console.log("push start, this.selpkgver=" + this.selpkgver + " this.selectedRows" + this.selectedRows);
         window.console.log("*** push schedule datetime," + this.scheduletime);
 
+        if (!(this.selectedRows && this.selectedRows.length > 0)) {
+            const evt = new ShowToastEvent({
+                title: 'No records selected',
+                message: 'Please select subscriber records',
+                variant: 'error',
+            });
+            this.dispatchEvent(evt);
+            return;
+        }
+
         if (this.selpkgver && this.selectedRows && this.selectedRows.length > 0) {
             this.SchedulePushUpgrade();
+            //  Let's reset selections
+            this.selpkgver = null;
+            this.data = [];
+            this.outlierdata = [];
         }
 
         window.console.log("push end");

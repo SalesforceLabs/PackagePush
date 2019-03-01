@@ -14,6 +14,7 @@ git push -u origin master
 
 sfdx force:lightning:component:create --type lwc -n SchedulePush -d ./force-app/main/default/lwc
 sfdx force:lightning:component:create --type lwc -n ScheduleHistoryList -d ./force-app/main/default/lwc
+sfdx force:lightning:component:create --type lwc -n PackageNCTest -d ./force-app/main/default/lwc
 
 git commit:
 git commit -a --no-verify -m "init"

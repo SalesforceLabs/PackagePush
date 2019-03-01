@@ -11,6 +11,9 @@
             ],
             "c/pubsub": [
                 "pubsub/pubsub.js"
+            ],
+            "c/package-nc-test": [
+                "packageNCTest/packageNCTest.js"
             ]
         }
     },
