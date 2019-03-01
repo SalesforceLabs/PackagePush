@@ -14,23 +14,16 @@ import {
     ShowToastEvent
 } from 'lightning/platformShowToastEvent';
 
-variantOptions = [{
-        label: 'error',
-        value: 'error'
-    },
-    {
-        label: 'warning',
-        value: 'warning'
-    },
-    {
-        label: 'success',
-        value: 'success'
-    },
-    {
-        label: 'info',
-        value: 'info'
-    }
-];
+import {
+    CurrentPageReference
+} from 'lightning/navigation';
+
+import {
+    registerListener,
+    unregisterAllListeners,
+    fireEvent
+} from 'c/pubsub';
+
 
 export default class ScheduleHistoryList extends LightningElement {
 
@@ -85,15 +78,22 @@ export default class ScheduleHistoryList extends LightningElement {
         },
     ]
 
+
+    @wire(CurrentPageReference) pageRef;
+
     @wire(getPendingJobs, {})
     getPendingJobs;
 
     connectedCallback() {
-        this.boundPushScheduledHandler = this.handlePushScheduled.bind(this);
+        //        this.boundPushScheduledHandler = this.handlePushScheduled.bind(this);
+
+        registerListener('ScheduledEvent', this.handlePushScheduled, this);
+
         //registerListener('ScheduledEvent', this.boundPushScheduledHandler);
     }
 
     disconnectedCallback() {
+        unregisterAllListeners(this);
         //unregisterAllListeners('ScheduledEvent', this.boundPushScheduledHandler);
     }
 
@@ -136,31 +136,33 @@ export default class ScheduleHistoryList extends LightningElement {
         return records;
     }
 
-    async doCancelPush(pushid) {
-        await cancelPush({
+    doCancelPush(pushid) {
+
+        cancelPush({
             pushreqid: pushid
         }).then((result) => {
             window.console.log("cancelPush got results");
 
             window.console.log("cancelPush results=" + JSON.stringify(result));
             if (result.status) {
-
-                this.showNotification({
-                    title: 'Scheduled Push canceled!',
-                    message: 'Successfully!',
+                window.console.log("cancelPush results in success");
+                const evt = new ShowToastEvent({
+                    title: 'Scheduled Push cancel',
+                    message: 'Canceled Successfully!',
                     variant: 'success',
                 });
-                //this.fireCanceledChangeEvent();
+                this.dispatchEvent(evt);
 
                 refreshApex(this.getPendingJobs);
 
             } else {
 
-                this.showNotification({
+                const evt = new ShowToastEvent({
                     title: 'Scheduled Push cancel failed',
                     message: result.message,
                     variant: 'error',
                 });
+                this.dispatchEvent(evt);
 
             }
         });
@@ -182,13 +184,15 @@ export default class ScheduleHistoryList extends LightningElement {
         refreshApex(this.getPendingJobs);
     }
 
-    showNotification(titleText, messageText, vari) {
+    showNotification(titleText, messageText, messageType) {
+
         const evt = new ShowToastEvent({
             title: titleText,
             message: messageText,
-            variant: vari
+            variant: messageType,
         });
         this.dispatchEvent(evt);
+
     }
 
 }

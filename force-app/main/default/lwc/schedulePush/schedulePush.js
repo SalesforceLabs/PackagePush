@@ -11,6 +11,15 @@ import {
 }
 from 'lightning/uiListApi';
 
+import {
+    CurrentPageReference
+} from 'lightning/navigation';
+
+import {
+    fireEvent
+} from 'c/pubsub';
+
+
 /** LICENSE Schema. */
 import LICENSE_OBJECT_NAME_FIELD from '@salesforce/schema/sfLma__License__c.Name';
 import LICENSE_OBJECT from '@salesforce/schema/sfLma__License__c';
@@ -83,23 +92,7 @@ export default class SchedulePush extends LightningElement {
     validOrgStatus = ["TRIAL", "SIGNING_UP", "ACTIVE", "FREE", "Trial", "Active", "Free"];
     validLicenseStatus = ["Trial", "Active", "TRIAL", "ACTIVE", "FREE"];
 
-    variantOptions = [{
-            label: 'error',
-            value: 'error'
-        },
-        {
-            label: 'warning',
-            value: 'warning'
-        },
-        {
-            label: 'success',
-            value: 'success'
-        },
-        {
-            label: 'info',
-            value: 'info'
-        }
-    ];
+    @wire(CurrentPageReference) pageRef;
 
     @wire(getPkgOrgDetails, {
         "whichorg": ""
@@ -246,11 +239,13 @@ export default class SchedulePush extends LightningElement {
             //window.console.log('**license this.data=' + this.data.length);
         } else if (error) {
 
-            this.showNotification({
-                title: 'Error Loading List',
-                message: error.message,
+            const evt = new ShowToastEvent({
+                title: 'Error Loading License List',
+                message: error,
                 variant: 'error',
             });
+            this.dispatchEvent(evt);
+
         }
     }
 
@@ -484,21 +479,23 @@ export default class SchedulePush extends LightningElement {
             window.console.log("SchedulePushUpgrade results=" + JSON.stringify(result));
             if (result.status) {
 
-                this.showNotification({
+                this.firePushScheduledEvent();
+
+                const evt = new ShowToastEvent({
                     title: 'Scheduled Push upgrade',
                     message: 'Successfully!',
                     variant: 'success',
                 });
-                //this.firePushScheduledEvent();
+                this.dispatchEvent(evt);
 
             } else {
 
-                this.showNotification({
+                const evt = new ShowToastEvent({
                     title: 'Scheduled Push upgrade failed',
                     message: result.message,
                     variant: 'error',
                 });
-
+                this.dispatchEvent(evt);
             }
         });
     }
@@ -552,6 +549,8 @@ export default class SchedulePush extends LightningElement {
     firePushScheduledEvent() {
         //const scheduleinfo = {};
         //pubsub.fire('ScheduledEvent', scheduleinfo);
+        const scheduleinfo = {};
+        fireEvent(this.pageRef, 'ScheduledEvent', scheduleinfo);
     }
 
     get zeroSelectedRecords() {
@@ -570,11 +569,11 @@ export default class SchedulePush extends LightningElement {
         this.showoutlier = !this.showoutlier;
     }
 
-    showNotification(titleText, messageText, vari) {
+    showNotification(titleText, messageText, messageType) {
         const evt = new ShowToastEvent({
             title: titleText,
             message: messageText,
-            variant: vari
+            variant: messageType
         });
         this.dispatchEvent(evt);
     }

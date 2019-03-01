@@ -8,6 +8,9 @@
             ],
             "c/schedule-push": [
                 "schedulePush/schedulePush.js"
+            ],
+            "c/pubsub": [
+                "pubsub/pubsub.js"
             ]
         }
     },
