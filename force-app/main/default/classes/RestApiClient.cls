@@ -6,20 +6,29 @@ Public Static Final String BASESOBJECTPATH = '/services/data/' + APIVERSION;
 Public Static Final String QUERYPATH = BASESOBJECTPATH + 'query/?q=';
 Public Static Final String SOBJECTPATH = BASESOBJECTPATH + 'sobjects/';
 Boolean debug = true;
-Public String nc = 'myretail';
+
+public String nc;
+
+public RestApiClient(){
+    
+}
+
+public RestApiClient(String setnc) {
+  nc = setnc;
+}
 
 Public String query(String queryString) {
-    return makeApiCall(nc, HttpVerb.GET, QUERYPATH, queryString, '').getBody();
+    return makeApiCall(HttpVerb.GET, QUERYPATH, queryString, '').getBody();
 }
 
 Public String postreq(String path, String data) {
-    return makeApiCall(nc, HttpVerb.POST, path, '', data).getBody();
+    return makeApiCall(HttpVerb.POST, path, '', data).getBody();
 }
 Public String patchreq(String path, String data) {
-    return makeApiCall(nc, HttpVerb.PATCH, path, '', data).getBody();
+    return makeApiCall(HttpVerb.PATCH, path, '', data).getBody();
 }
     
-Public HTTPResponse makeApiCall(String namedCredentialName, HttpVerb method, String path, String query, String body){
+Public HTTPResponse makeApiCall(HttpVerb method, String path, String query, String body){
     String encodedQuery = EncodingUtil.urlEncode(query, 'UTF-8');
     if(method == HttpVerb.PATCH){
       method = HttpVerb.POST;
@@ -28,14 +37,20 @@ Public HTTPResponse makeApiCall(String namedCredentialName, HttpVerb method, Str
     HttpRequest apiRequest = new HttpRequest();
     apiRequest.setMethod(String.valueOf(method));
     if(String.isNotBlank(body) && (method == HttpVerb.POST || method == HttpVerb.PUT || method == HttpVerb.PATCH)){
+      
       apiRequest.setBody(body);
       apiRequest.setHeader('Content-Type', 'application/json');
     }
-    String endpoint = 'callout:' + namedCredentialName + path + encodedQuery;
+    String endpoint = 'callout:' + nc + path + encodedQuery;
     apiRequest.setEndpoint(endpoint);
     log('endpoint=' + endpoint);
     Http http = new Http();
     HttpResponse toReturn = http.send(apiRequest);
+
+    //log it
+    if(String.isNotBlank(body) && (method == HttpVerb.POST || method == HttpVerb.PUT || method == HttpVerb.PATCH)){
+      System.debug('makeApiCall body=' + body);
+    }
     System.debug('makeApiCall toReturn=' + toReturn);
     System.debug('makeApiCall return body=' + toReturn.getBody().unescapeJava());
     
@@ -60,7 +75,7 @@ Public HTTPResponse makeApiCall(String namedCredentialName, HttpVerb method, Str
    * Invokes omnibus version above, with blank body param
    */
   Public HTTPResponse makeApiCall(HttpVerb method, String path, String query){
-    return makeApiCall('', method, path, query, '');
+    return makeApiCall(method, path, query, '');
   }
 
   /**
@@ -68,7 +83,7 @@ Public HTTPResponse makeApiCall(String namedCredentialName, HttpVerb method, Str
    * Invokes omnibus version above, with blank body and query params
    */
   Public HTTPResponse makeApiCall(HttpVerb method, String path){
-    return makeApiCall('', method, path, '', '');
+    return makeApiCall(method, path, '', '');
   }
 
   // Private Helper Methods

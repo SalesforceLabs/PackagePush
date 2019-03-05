@@ -9,14 +9,26 @@ Public Static Final String PACKAGEPUSHJOB = SOBJECTPATH + 'packagepushjob/';
 Public Static Final String TREECREATEPATH = BASESOBJECTPATH + 'composite/tree/packagepushjob';
 Public Static Final String STATUSPENDING = '{"Status" :"Pending"}';
 Public Static Final String STATUSCANCELED = '{"Status" :"Canceled"}';
-    
+
+public PackageController(){
+
+}
+
+public PackageController(String nc){
+    super(nc);
+}
+
 @AuraEnabled(Cacheable=false)
-public static RestResult schedulePush(String packageverid, String starttime, String orgs) {
+public static RestResult schedulePush(String pkgid, String packageverid, String starttime, String orgs) {
     
     RestResult retStatus = new RestResult();
     
 try{
     System.debug('Apex SchedulePush called');
+
+    String setnc = getNC(pkgid);
+    System.debug('Apex SchedulePush nc=' + setnc);
+
     List<String> selectedIdsList = new List<String>();
     Object[] values = (Object[])System.JSON.deserializeUntyped(orgs);
     if(values.size()>0){         
@@ -27,7 +39,7 @@ try{
     
     //Step 1
     String req = '{"PackageVersionId" : "' + packageverid + '" ,"ScheduledStartTime" : "' + starttime + '"}';
-    String res = new PackageController().postreq(PUSHPACKAGEPATH, req);
+    String res = new PackageController(setnc).postreq(PUSHPACKAGEPATH, req);
     logit('SchedulePush res=' + res);
     
     Map<String, Object> pr = (Map<String, Object>)Json.deserializeUntyped(res);
@@ -53,11 +65,11 @@ try{
         req = req.replace('ptype', 'type');
         System.debug('job req=' + req + '\n');
         
-        res = new PackageController().postreq(TREECREATEPATH, req);
+        res = new PackageController(setnc).postreq(TREECREATEPATH, req);
         logit('Createjob res=' + res);
         
         ////Step 3 start the job
-        res = new PackageController().patchreq(PUSHPACKAGEPATH + pushreqid, STATUSPENDING);
+        res = new PackageController(setnc).patchreq(PUSHPACKAGEPATH + pushreqid, STATUSPENDING);
         logit('STATUSPENDING res=' + res);
         
         // CancelPush( pushreqid);
@@ -78,11 +90,15 @@ try{
 
 //0DVB0000000TN9p
 @AuraEnabled(Cacheable=false)
-public static RestResult CancelPush(String pushreqid) {
+public static RestResult CancelPush(String pkgid, String pushreqid) {
 RestResult retStatus = new RestResult();
 
     try{
-        String res = new PackageController().patchreq(PUSHPACKAGEPATH + pushreqid, STATUSCANCELED);
+
+        String setnc = getNC(pkgid);
+        System.debug('Apex SchedulePush nc=' + setnc);
+
+        String res = new PackageController(setnc).patchreq(PUSHPACKAGEPATH + pushreqid, STATUSCANCELED);
         logit('CancelPush res=' + res);
             retStatus.status = true;
             retStatus.message = 'Schedule cancel';
@@ -97,9 +113,12 @@ RestResult retStatus = new RestResult();
 //Cross-org call    
 @AuraEnabled(Cacheable=true)
 public static String getPendingJobs(String pkgid) {
-    
+
+    String setnc = getNC(pkgid);
+    System.debug('Apex SchedulePush nc=' + setnc);
+
     String q = 'SELECT id, Status, ScheduledStartTime, PackageVersionId FROM PackagePushRequest';
-    String res = new PackageController().query(q);
+    String res = new PackageController(setnc).query(q);
     logit('getPendingJobs res=' + res);
     
     return res;
@@ -107,20 +126,27 @@ public static String getPendingJobs(String pkgid) {
   
 //Cross-org call    
 @AuraEnabled(Cacheable=true)
-public static String getFromPkgOrgPackageVersions(String pkgid, String pkgverid) {
+public static String getFromPkgOrgPackageVersions( String pkgid, String pkgverid) {
     
+    String setnc = getNC(pkgid);
+    System.debug('Apex SchedulePush nc=' + setnc);
+
     String q = 'SELECT BuildNumber,Id,MajorVersion,MetadataPackageId,MinorVersion,Name,PatchVersion,ReleaseState FROM MetadataPackageVersion';
-    String res = new PackageController().query(q);
+    String res = new PackageController(setnc).query(q);
     logit('getFromPkgOrgPackageVersions res=' + res);
     
     return res;
 }
 
+//Cross-org call
 @AuraEnabled(Cacheable=true)
-public static String getPkgOrgDetails(String whichorg) {
-    
+public static String getPkgOrgDetails(String pkgid, String whichorg) {
+
+    String setnc = getNC(pkgid);
+    System.debug('Apex SchedulePush nc=' + setnc);
+
     String q = 'SELECT Id, TimeZoneSidKey, DefaultLocaleSidKey FROM Organization';
-    String res = new PackageController().query(q);
+    String res = new PackageController(setnc).query(q);
     logit('getPkgOrgDetails res=' + res);
     
     return res;
@@ -150,6 +176,19 @@ public static sfLma__Package_Version__c[] getPackageVersions() {
     return recs;
 }
 
+//Helper
+@AuraEnabled(Cacheable=true)
+public static String getNC(String pkgid) {
+    
+    logit('getNC pkgid=' + pkgid);
+
+    PackageNcMapping__c nc =
+        [SELECT Id, Name, IsActive__c, NamedCredential__c, RelatedPackage__c FROM PackageNcMapping__c where RelatedPackage__r.sfLma__Package_ID__c =: pkgid];
+
+    logit('getNC got nc=' + nc);
+
+    return nc.NamedCredential__c;
+}
     
     Public static Void logit(Object o){
         if(debug){
@@ -186,6 +225,7 @@ Public class PkgVersion {
       this.BuildNumber = buildNumber;
     }
   }
+
 
 Public class Subscriber {
     @AuraEnabled public String Id { get; set; }

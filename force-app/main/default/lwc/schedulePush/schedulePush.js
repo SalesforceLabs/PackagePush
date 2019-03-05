@@ -95,6 +95,7 @@ export default class SchedulePush extends LightningElement {
     @wire(CurrentPageReference) pageRef;
 
     @wire(getPkgOrgDetails, {
+        pkgid: "$selpkgid",
         "whichorg": ""
     })
     getPkgOrgDetails(value) {
@@ -311,13 +312,13 @@ export default class SchedulePush extends LightningElement {
         window.console.log('**packageHandler, val=' + event.detail.value);
         this.selpkgid = event.detail.value;
 
+        this.firePackageSelectedEvent();
+
         //update pkgVersionList
         this.pkgVersionOptions = [];
 
         if (this.pkgVersions.data) {
             //window.console.log('** getPackages data=' + JSON.stringify(this.pkgVersions.data));
-
-            let oPkgVersions = [];
 
             let filteredPkgVersions = this.pkgVersions.data.filter(ver => {
                 return ver.sfLma__Package__r.sfLma__Package_ID__c === event.detail.value;
@@ -335,7 +336,9 @@ export default class SchedulePush extends LightningElement {
     }
 
     getPkgOrgVersions() {
-        getFromPkgOrgPackageVersions().then((result) => {
+        getFromPkgOrgPackageVersions({
+            pkgid: this.selpkgid
+        }).then((result) => {
             window.console.log("getFromPkgOrgPackageVersions result=" + JSON.stringify(result));
             //window.console.log("getFromPkgOrgPackageVersions data=" + JSON.stringify(this.data));
 
@@ -459,6 +462,7 @@ export default class SchedulePush extends LightningElement {
         //accountId: this.recordId,
         //String packageverid, String starttime, String orgs
         schedulePush({
+            pkgid: this.selpkgid,
             packageverid: this.selpkgver,
             starttime: scheduletime,
             orgs: orgidjson
@@ -550,12 +554,16 @@ export default class SchedulePush extends LightningElement {
         */
     }
 
-    //Fix this
     firePushScheduledEvent() {
-        //const scheduleinfo = {};
-        //pubsub.fire('ScheduledEvent', scheduleinfo);
         const scheduleinfo = {};
         fireEvent(this.pageRef, 'ScheduledEvent', scheduleinfo);
+    }
+
+    firePackageSelectedEvent() {
+        const packageinfo = {
+            "pkgid": this.selpkgid
+        };
+        fireEvent(this.pageRef, 'PackageSelected', packageinfo);
     }
 
     get zeroSelectedRecords() {

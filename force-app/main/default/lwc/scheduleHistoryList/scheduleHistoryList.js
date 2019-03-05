@@ -78,23 +78,23 @@ export default class ScheduleHistoryList extends LightningElement {
         },
     ]
 
+    selpkgid;
 
     @wire(CurrentPageReference) pageRef;
 
-    @wire(getPendingJobs, {})
+    @wire(getPendingJobs, {
+        pkgid: "$selpkgid"
+    })
     getPendingJobs;
 
     connectedCallback() {
-        //        this.boundPushScheduledHandler = this.handlePushScheduled.bind(this);
-
         registerListener('ScheduledEvent', this.handlePushScheduled, this);
+        registerListener('PackageSelected', this.handlePackageSelected, this);
 
-        //registerListener('ScheduledEvent', this.boundPushScheduledHandler);
     }
 
     disconnectedCallback() {
         unregisterAllListeners(this);
-        //unregisterAllListeners('ScheduledEvent', this.boundPushScheduledHandler);
     }
 
     get data() {
@@ -139,6 +139,7 @@ export default class ScheduleHistoryList extends LightningElement {
     doCancelPush(pushid) {
 
         cancelPush({
+            pkgid: this.selpkgid,
             pushreqid: pushid
         }).then((result) => {
             window.console.log("cancelPush got results");
@@ -182,6 +183,11 @@ export default class ScheduleHistoryList extends LightningElement {
         //this.doCancelPush(event.detail.row.Id);
         window.console.log('**handlePushScheduled=' + JSON.stringify(event));
         refreshApex(this.getPendingJobs);
+    }
+
+    handlePackageSelected(event) {
+        window.console.log('**handlePackageSelected=' + JSON.stringify(event));
+        this.selpkgid = event.pkgid;
     }
 
     showNotification(titleText, messageText, messageType) {
