@@ -17,6 +17,10 @@ public RestApiClient(String setnc) {
   nc = setnc;
 }
 
+Public String doGet(String queryString) {
+    return makeApiCall(HttpVerb.GET, '', queryString, '').getBody();
+}
+
 Public String query(String queryString) {
     return makeApiCall(HttpVerb.GET, QUERYPATH, queryString, '').getBody();
 }

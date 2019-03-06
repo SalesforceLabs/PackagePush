@@ -1,7 +1,7 @@
 public with sharing class PackageController extends RestApiClient{
 
 static Boolean debug = true;
-Public Static Final String APIVERSION = 'v44.0/';
+Public Static Final String APIVERSION = 'v45.0/';
 Public Static Final String BASESOBJECTPATH = '/services/data/' + APIVERSION;
 Public Static Final String SOBJECTPATH = BASESOBJECTPATH + 'sobjects/';
 Public Static Final String PUSHPACKAGEPATH = SOBJECTPATH + 'packagepushrequest/';
@@ -9,6 +9,8 @@ Public Static Final String PACKAGEPUSHJOB = SOBJECTPATH + 'packagepushjob/';
 Public Static Final String TREECREATEPATH = BASESOBJECTPATH + 'composite/tree/packagepushjob';
 Public Static Final String STATUSPENDING = '{"Status" :"Pending"}';
 Public Static Final String STATUSCANCELED = '{"Status" :"Canceled"}';
+
+Public Static Final String HAMMERTESTPATH = BASESOBJECTPATH + 'connect/hammer-test';
 
 public PackageController(){
 
@@ -151,7 +153,17 @@ public static String getPkgOrgDetails(String pkgid, String whichorg) {
     
     return res;
 }
+
+ //Cross-org call ISV Hammer
+@AuraEnabled(Cacheable=true)
+public static String getAllHammerTests() {
+
+    String res = new PackageController('myretail').doGet(HAMMERTESTPATH);
+    logit('getPkgOrgDetails res=' + res);
     
+    return res;
+}
+
 @AuraEnabled(Cacheable=true)
 public static sfLma__License__c[] getLicenseDetails() {
 
