@@ -1,7 +1,13 @@
 ## Dev LMA org
 
 dev2@lma.push/kam123456
+
 sfdx force:source:deploy --manifest /Users/kamlesh.patel/lwc/labapp/PackagePush/manifest/package.xml
+
+sfdx force:source:deploy -m ApexClass
+sfdx force:apex:test:run --synchronous --classnames PackagePush_Tests
+
+dev@pkg.retail/kam12345 pkg org id: 00D1U0000012fU4
 
 ## GIT
 

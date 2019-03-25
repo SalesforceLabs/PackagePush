@@ -10,6 +10,6 @@
     },
     "html.suggest.angular1": false,
     "html.suggest.ionic": false,
-    "eslint.nodePath": "/Users/kamlesh.patel/.vscode/extensions/salesforce.salesforcedx-vscode-lwc-45.3.0/node_modules",
+    "eslint.nodePath": "/Users/kamlesh.patel/.vscode/extensions/salesforce.salesforcedx-vscode-lwc-45.7.0/node_modules",
     "salesforcedx-vscode-core.show-cli-success-msg": false
 }

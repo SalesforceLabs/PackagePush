@@ -3,17 +3,17 @@
         "experimentalDecorators": true,
         "baseUrl": ".",
         "paths": {
+            "c/package-nc-test": [
+                "packageNCTest/packageNCTest.js"
+            ],
+            "c/pubsub": [
+                "pubsub/pubsub.js"
+            ],
             "c/schedule-history-list": [
                 "scheduleHistoryList/scheduleHistoryList.js"
             ],
             "c/schedule-push": [
                 "schedulePush/schedulePush.js"
-            ],
-            "c/pubsub": [
-                "pubsub/pubsub.js"
-            ],
-            "c/package-nc-test": [
-                "packageNCTest/packageNCTest.js"
             ]
         }
     },

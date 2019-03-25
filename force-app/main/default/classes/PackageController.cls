@@ -20,13 +20,14 @@ public PackageController(String nc){
     super(nc);
 }
 
+//Cross-org call    
 @AuraEnabled(Cacheable=false)
 public static RestResult schedulePush(String pkgid, String packageverid, String starttime, String orgs) {
     
     RestResult retStatus = new RestResult();
     
 try{
-    System.debug('Apex SchedulePush called');
+    System.debug('Apex SchedulePush called with orgs=' + orgs);
 
     String setnc = getNC(pkgid);
     System.debug('Apex SchedulePush nc=' + setnc);
@@ -90,7 +91,7 @@ try{
     return retStatus;     
 }
 
-//0DVB0000000TN9p
+//Cross-org call    
 @AuraEnabled(Cacheable=false)
 public static RestResult CancelPush(String pkgid, String pushreqid) {
 RestResult retStatus = new RestResult();
@@ -154,15 +155,6 @@ public static String getPkgOrgDetails(String pkgid, String whichorg) {
     return res;
 }
 
- //Cross-org call ISV Hammer
-@AuraEnabled(Cacheable=true)
-public static String getAllHammerTests() {
-
-    String res = new PackageController('myretail').doGet(HAMMERTESTPATH);
-    logit('getPkgOrgDetails res=' + res);
-    
-    return res;
-}
 
 @AuraEnabled(Cacheable=true)
 public static sfLma__License__c[] getLicenseDetails() {

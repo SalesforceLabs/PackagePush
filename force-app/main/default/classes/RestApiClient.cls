@@ -17,9 +17,11 @@ public RestApiClient(String setnc) {
   nc = setnc;
 }
 
+/*
 Public String doGet(String queryString) {
     return makeApiCall(HttpVerb.GET, '', queryString, '').getBody();
 }
+*/
 
 Public String query(String queryString) {
     return makeApiCall(HttpVerb.GET, QUERYPATH, queryString, '').getBody();
@@ -33,6 +35,9 @@ Public String patchreq(String path, String data) {
 }
     
 Public HTTPResponse makeApiCall(HttpVerb method, String path, String query, String body){
+
+    log('makeApiCall called');
+
     String encodedQuery = EncodingUtil.urlEncode(query, 'UTF-8');
     if(method == HttpVerb.PATCH){
       method = HttpVerb.POST;
@@ -66,10 +71,10 @@ Public HTTPResponse makeApiCall(HttpVerb method, String path, String query, Stri
       System.debug('makeApiCall return body=' + body);
       System.debug('makeApiCall return location=' + toReturn.getHeader('Location'));
       
-      log(toReturn.getBody().unescapeJava());
-      log(path);
-      log(query);
-      log(body);
+      //log(toReturn.getBody().unescapeJava());
+      //log(path);
+      //log(query);
+      //log(body);
     }
     return toReturn;
   }
@@ -78,31 +83,21 @@ Public HTTPResponse makeApiCall(HttpVerb method, String path, String query, Stri
    * Convience version of makeApiCall without body param.
    * Invokes omnibus version above, with blank body param
    */
+  /*
   Public HTTPResponse makeApiCall(HttpVerb method, String path, String query){
     return makeApiCall(method, path, query, '');
   }
+*/
 
   /**
    * Convience version of makeApiCall without body or query params.
    * Invokes omnibus version above, with blank body and query params
    */
+/*
   Public HTTPResponse makeApiCall(HttpVerb method, String path){
     return makeApiCall(method, path, '', '');
   }
-
-  // Private Helper Methods
-  /**
-   * Ensures that the inputted string ends in a /
-   * makes callouts more robust.
-   * @param   String      resource - string to ensure ends in /
-   * @return  String      returns inputted string with / if it didn't already end in one.
-   */
-  Public String ensureStringEndsInSlash(String resource){
-    if(resource.endsWith('/')){
-      return resource;
-    }
-    return resource + '/';
-  }
+*/
 
  Public Void log(Object o){
     if(debug){
