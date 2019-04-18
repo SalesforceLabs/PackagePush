@@ -1,4 +1,4 @@
-### useful commands for developing in LMA org. Since LMA org is not scratch org, following commands will be useful
+### Useful commands for developing in LMA org. Since LMA org is a regular org and not a scratch org, following commands will be useful
 
 Git repo: https://github.com/SalesforceLabs/PackagePush
 
