@@ -7,7 +7,6 @@ public static final String SUBSCRIBERID = '00DB0000000ThCi';
 public static final String SCHEDULESTARTTIME = '2019-12-12T12:00:00.000+0000';
 public static final String SUBSCRIBERIDJSON = '["00DB0000000ThCi"]';
 
-
 @testSetup static void setup() {
 
   System.debug('PackagePush_Tests setup called');
@@ -17,12 +16,10 @@ public static final String SUBSCRIBERIDJSON = '["00DB0000000ThCi"]';
   sfLma__License__c license = (sfLma__License__c) TestFactory.createSObject(new sfLma__License__c(sflma__package__c=pkg.id, sflma__Package_Version__c=pkgver.id, sflma__Subscriber_org_Id__c='00D6A0000003kIp'), true);
   
   PackageNcMapping__c nc = new PackageNcMapping__c();
-  //nc.Name = 'nc1';
   nc.IsActive__c = true;
   nc.NamedCredential__c = 'nc1';
   nc.RelatedPackage__c = pkg.Id;
   insert nc;
-
 
 }
 
@@ -92,9 +89,21 @@ static TestMethod void test_getLicenseDetails(){
     CalloutMock mock = CalloutMock.simpleSuccess(MockResponse.emptyjson);    
     Test.setMock(HttpCalloutMock.class, mock);    
     Test.startTest();
-    String res = PackageController.getPkgOrgDetails(PKGID, SUBSCRIBERID);    
+    String res = PackageController.getPkgOrgDetails(PKGID);    
     Test.stopTest();
     System.assertNotEquals(res, null);  
   } 
+
+static TestMethod void test_getOrgStatusByNCRecordId(){
+  CalloutMock mock = CalloutMock.simpleSuccess(MockResponse.emptyjson);    
+  PackageNcMapping__c nc = [select Id from PackageNcMapping__c limit 1];
+  System.debug('test_getOrgStatusByNCRecordId nc=' + nc);
+  Test.setMock(HttpCalloutMock.class, mock);    
+  Test.startTest();
+  String rec = PackageController.getOrgStatusByNCRecordId(nc.Id);
+  Test.stopTest();
+  
+  System.assertNotEquals(rec, null);
+}
 
 }

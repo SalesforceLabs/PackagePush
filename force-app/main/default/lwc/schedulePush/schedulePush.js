@@ -95,8 +95,7 @@ export default class SchedulePush extends LightningElement {
     @wire(CurrentPageReference) pageRef;
 
     @wire(getPkgOrgDetails, {
-        pkgid: "$selpkgid",
-        "whichorg": ""
+        pkgid: "$selpkgid"
     })
     getPkgOrgDetails(value) {
 
@@ -302,6 +301,8 @@ export default class SchedulePush extends LightningElement {
         let selListView = event.detail.value;
         if (selListView === 'All') {
             selListView = 'sfLma__All';
+        } else {
+            selListView = 'schedulepkg__' + selListView;
         }
         window.console.log('**listviewHandler, new val=' + event.detail.value);
 
@@ -336,11 +337,14 @@ export default class SchedulePush extends LightningElement {
     }
 
     getPkgOrgVersions() {
+        window.console.log("getPkgOrgVersions start");
         getFromPkgOrgPackageVersions({
             pkgid: this.selpkgid
         }).then((result) => {
-            window.console.log("getFromPkgOrgPackageVersions result=" + JSON.stringify(result));
+
+            //window.console.log("getFromPkgOrgPackageVersions result=" + JSON.stringify(result));
             //window.console.log("getFromPkgOrgPackageVersions data=" + JSON.stringify(this.data));
+            window.console.log("Inside getFromPkgOrgPackageVersions result");
 
             result = JSON.parse(result);
             //let's process the filters
@@ -348,19 +352,21 @@ export default class SchedulePush extends LightningElement {
             result.records.forEach(data => {
                 let strVernum = String(data.MajorVersion) + String(data.MinorVersion) + String(data.PatchVersion);
                 let vernum = Number(strVernum);
-                window.console.log("data.Id" + data.Id + ", ver=" + vernum);
+                // window.console.log("data.Id" + data.Id + ", ver=" + vernum);
                 this.pkgVerMap.set(data.Id, vernum);
             });
 
-            window.console.log('this.alldata=' + JSON.stringify(this.alldata));
+            //window.console.log('this.alldata=' + JSON.stringify(this.alldata));
+
+            window.console.log("before licview");
 
             this.alldata.forEach(licview => {
-                window.console.log("licview=" + JSON.stringify(licview));
+                // window.console.log("licview=" + JSON.stringify(licview));
 
                 this.wiredLicenseDetails.data.forEach(licmaster => {
-                    window.console.log("licmaster=" + JSON.stringify(licmaster));
+                    //window.console.log("licmaster=" + JSON.stringify(licmaster));
                     if (licview.id === licmaster.Id) {
-                        window.console.log("licview.Id=" + licview.id + " verid=" + licmaster.sfLma__Package_Version__r.sfLma__Version_ID__c);
+                        //   window.console.log("licview.Id=" + licview.id + " verid=" + licmaster.sfLma__Package_Version__r.sfLma__Version_ID__c);
                         licview["pkgid"] = licmaster.sfLma__Package__r.sfLma__Package_ID__c;
                         licview["pkgverid"] = licmaster.sfLma__Package_Version__r.sfLma__Version_ID__c;
                         licview["orgid"] = licmaster.sfLma__Subscriber_Org_ID__c;
@@ -373,16 +379,19 @@ export default class SchedulePush extends LightningElement {
             //window.console.log("getFromPkgOrgPackageVersions pkgVerMap size=" + JSON.stringify(this.pkgVerMap.size));
             //  window.console.log("getFromPkgOrgPackageVersions all data=" + JSON.stringify(this.alldata));
 
+            window.console.log("before outlier");
             let outlierliceids = [];
 
             let versionNotCompatibleData = this.alldata.filter(data => {
                 let licpkgvernum = this.pkgVerMap.get(data.pkgverid);
                 let selpkgvernum = this.pkgVerMap.get(this.selpkgver);
 
+                /*
                 window.console.log("lic pkgverid" + data.pkgverid + ", val=" + licpkgvernum);
                 window.console.log("sel pkgverid" + this.selpkgver + ", val=" + selpkgvernum);
                 window.console.log("orgstatus=" + data.orgstatus);
                 window.console.log("licstatus=" + data.licstatus);
+                */
 
                 data["OutlierReason"] = "";
                 let isGood = true;
@@ -396,13 +405,13 @@ export default class SchedulePush extends LightningElement {
                 if (!this.validOrgStatus.includes(data.orgstatus)) {
 
                     data["OutlierReason"] = data["OutlierReason"] + " OrgStatusNotValid-" + data.orgstatus;
-                    window.console.log("*orgstatus not valid=" + data.orgstatus);
+                    //window.console.log("*orgstatus not valid=" + data.orgstatus);
                     isGood = false;
                 }
 
                 if (!this.validLicenseStatus.includes(data.licstatus)) {
                     data["OutlierReason"] = data["OutlierReason"] + " LicenseStatusNotValid-" + data.licstatus;
-                    window.console.log("*licstatus not valid=" + data.licstatus);
+                    //window.console.log("*licstatus not valid=" + data.licstatus);
                     isGood = false;
                 }
 
@@ -413,15 +422,16 @@ export default class SchedulePush extends LightningElement {
                 return (!isGood);
             });
 
-            window.console.log("outlierliceids=" + outlierliceids);
+            //window.console.log("outlierliceids=" + outlierliceids);
+            window.console.log("before goodData");
 
             let goodData = this.alldata.filter(data => {
                 let licpkgvernum = this.pkgVerMap.get(data.pkgverid);
                 let selpkgvernum = this.pkgVerMap.get(this.selpkgver);
 
-                window.console.log("lic id" + data.id);
-                window.console.log("lic pkgverid" + data.pkgverid + ", val=" + licpkgvernum);
-                window.console.log("sel pkgverid" + this.selpkgver + ", val=" + selpkgvernum);
+                // window.console.log("lic id" + data.id);
+                // window.console.log("lic pkgverid" + data.pkgverid + ", val=" + licpkgvernum);
+                // window.console.log("sel pkgverid" + this.selpkgver + ", val=" + selpkgvernum);
 
                 if (outlierliceids.includes(data.id)) {
                     return false;
@@ -429,6 +439,8 @@ export default class SchedulePush extends LightningElement {
                     return true;
                 }
             });
+
+            window.console.log("after goodData");
 
             //   window.console.log("getFromPkgOrgPackageVersions alldata=" + JSON.stringify(this.alldata));
             //   window.console.log("getFromPkgOrgPackageVersions tempData=" + JSON.stringify(goodData));

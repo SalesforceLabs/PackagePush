@@ -1,56 +1,41 @@
 import {
     LightningElement,
     api,
-    wire,
     track
 } from 'lwc';
 
-import {
-    getRecord
-} from 'lightning/uiRecordApi';
-
-import getPkgOrgDetails from '@salesforce/apex/PackageController.getPkgOrgDetails';
-
-const fields = [
-    'PackageNcMapping__c.Name',
-    'PackageNcMapping__c.RelatedPackage__c',
-    'PackageNcMapping__c.NamedCredential__c',
-    'PackageNcMapping__c.IsActive__c'
-];
+import getOrgStatusByNCRecordId from '@salesforce/apex/PackageController.getOrgStatusByNCRecordId';
 
 export default class PackageNCTest extends LightningElement {
 
     @api recordId;
 
-    @wire(getRecord, {
-        recordId: '$recordId',
-        fields
-    })
-    pkgncmappings;
+    @track status;
 
-    @wire(getPkgOrgDetails, {
-        "whichorg": ""
-    })
-    getOrgDetails({
-        error,
-        data
-    }) {
-        if (error) {
-            this.orgTestResult = 'Failed to connect';
-            window.console.log('** Get org details error=' + JSON.stringify(error));
-        }
-        if (data) {
-            this.orgTestResult = 'Connected';
-            window.console.log('** Get org details success!');
-        }
-    }
+    connectedCallback() {
 
-    get name() {
+        window.console.log("OrgConnectStatus recordId =" + this.recordId);
 
-        window.console.log('** name=' + JSON.stringify(this.pkgncmappings.data));
-        if (this.pkgncmappings.data) {
-            return this.pkgncmappings.data.fields.IsActive__c.value;
-        }
+        getOrgStatusByNCRecordId({
+            "recid": this.recordId
+        }).then((result) => {
+
+            window.console.log("OrgConnectStatus result =" + result);
+
+            if (result == null) {
+                this.status = 'Not Connected';
+            } else {
+
+                let orgstatus = JSON.parse(result);
+
+                if (orgstatus != null && orgstatus.totalSize > 0) {
+                    this.status = 'Connected';
+                } else {
+                    this.status = 'Not Connected';
+                }
+            }
+
+        });
 
     }
 

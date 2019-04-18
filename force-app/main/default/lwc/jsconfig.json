@@ -3,16 +3,16 @@
         "experimentalDecorators": true,
         "baseUrl": ".",
         "paths": {
-            "c/package-nc-test": [
+            "c/packageNCTest": [
                 "packageNCTest/packageNCTest.js"
             ],
             "c/pubsub": [
                 "pubsub/pubsub.js"
             ],
-            "c/schedule-history-list": [
+            "c/scheduleHistoryList": [
                 "scheduleHistoryList/scheduleHistoryList.js"
             ],
-            "c/schedule-push": [
+            "c/schedulePush": [
                 "schedulePush/schedulePush.js"
             ]
         }
@@ -20,5 +20,10 @@
     "include": [
         "**/*",
         "../../../../.sfdx/typings/lwc/**/*.d.ts"
-    ]
+    ],
+    "typeAcquisition": {
+        "include": [
+            "jest"
+        ]
+    }
 }

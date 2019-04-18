@@ -1,37 +1,19 @@
+### useful commands for developing in LMA org. Since LMA org is not scratch org, following commands will be useful
+
+Git repo: https://github.com/SalesforceLabs/PackagePush
+
 ## Dev LMA org
 
-dev2@lma.push/kam123456
+sfdx force:auth:web:login -d
 
 sfdx force:source:deploy --manifest /Users/kamlesh.patel/lwc/labapp/PackagePush/manifest/package.xml
 
 sfdx force:source:deploy -m ApexClass
+sfdx force:source:deploy -m LightningComponentBundle
 sfdx force:apex:test:run --synchronous --classnames PackagePush_Tests
-
-dev@pkg.retail/kam12345 pkg org id: 00D1U0000012fU4
-
-## GIT
-
-git remote remove origin
-git remote add origin https://github.com/kamipatel/packagepush.git
-git commit -a --no-verify -m "init"
-git push -u origin master
 
 ## Create lightning component
 
 sfdx force:lightning:component:create --type lwc -n SchedulePush -d ./force-app/main/default/lwc
 sfdx force:lightning:component:create --type lwc -n ScheduleHistoryList -d ./force-app/main/default/lwc
 sfdx force:lightning:component:create --type lwc -n PackageNCTest -d ./force-app/main/default/lwc
-
-git commit:
-git commit -a --no-verify -m "init"
-git push -u origin master
-git remote add origin https://github.com/kamipatel/PackagePush
-Schedule.git
-
-Scratch org:
-mylma@kam.dev
-https://agility-java-5425-dev-ed.lightning.force.com/docs/component-library/bundle/lightning:button/example#lightningcomponentdemo:exampleButtonsDisabled
-
-Data import/export
-Old lma org kamipatel-5uzt@force.com/kam123456
-sfdx force:auth:web:login -d -a oldlmaorg

@@ -143,7 +143,7 @@ public static String getFromPkgOrgPackageVersions( String pkgid, String pkgverid
 
 //Cross-org call
 @AuraEnabled(Cacheable=true)
-public static String getPkgOrgDetails(String pkgid, String whichorg) {
+public static String getPkgOrgDetails(String pkgid) {
 
     String setnc = getNC(pkgid);
     System.debug('Apex SchedulePush nc=' + setnc);
@@ -182,16 +182,37 @@ public static sfLma__Package_Version__c[] getPackageVersions() {
 
 //Helper
 @AuraEnabled(Cacheable=true)
+public static String getOrgStatusByNCRecordId(String recid) {
+    
+    logit('getOrgStatusByNCRecordId id=' + recid);
+
+try{
+    schedulepkg__PackageNcMapping__c nc =
+        [SELECT Id, Name, schedulepkg__IsActive__c, schedulepkg__NamedCredential__c, schedulepkg__RelatedPackage__r.sfLma__Package_ID__c FROM schedulepkg__PackageNcMapping__c where Id =: recid];
+
+    logit('getOrgStatusByNCRecordId got nc=' + nc);
+
+    String res = getPkgOrgDetails(nc.schedulepkg__RelatedPackage__r.sfLma__Package_ID__c);
+    return res;
+
+}catch(Exception e){
+    logit('getOrgStatusByNCRecordId exception=' + e);
+}
+ return null;    
+}
+
+//Helper
+@AuraEnabled(Cacheable=true)
 public static String getNC(String pkgid) {
     
     logit('getNC pkgid=' + pkgid);
 
     PackageNcMapping__c nc =
-        [SELECT Id, Name, IsActive__c, NamedCredential__c, RelatedPackage__c FROM PackageNcMapping__c where RelatedPackage__r.sfLma__Package_ID__c =: pkgid];
+        [SELECT Id, Name, schedulepkg__IsActive__c, schedulepkg__NamedCredential__c, schedulepkg__RelatedPackage__c FROM schedulepkg__PackageNcMapping__c where schedulepkg__RelatedPackage__r.sfLma__Package_ID__c =: pkgid];
 
     logit('getNC got nc=' + nc);
 
-    return nc.NamedCredential__c;
+    return nc.schedulepkg__NamedCredential__c;
 }
     
     Public static Void logit(Object o){
