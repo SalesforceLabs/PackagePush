@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
- 
+
 public Virtual class RestApiClient {
 
 Public Enum HttpVerb {GET, POST, PATCH, PUT, HEAD}
-Public Static Final String APIVERSION = 'v45.0/';
+Public Static Final String APIVERSION = 'v44.0/';
 Public Static Final String BASESOBJECTPATH = '/services/data/' + APIVERSION;
 Public Static Final String QUERYPATH = BASESOBJECTPATH + 'query/?q=';
 Public Static Final String SOBJECTPATH = BASESOBJECTPATH + 'sobjects/';
