@@ -1,3 +1,7 @@
+### Documentation is here
+
+https://salesforce.quip.com/ZEuaAyajBmAB
+
 ### To extend this app clone this repo and develop in seperate dev LMA org. Do not do development/test in your main LMA org.
 
 ### Useful commands for developing in dev LMA org. Since LMA org is a regular org and not a scratch org, following commands will be useful. Also in dev LMA org, you will need to include LMA managed package.
